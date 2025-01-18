@@ -9,13 +9,15 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.kimtobias.frontend"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.kimtobias.frontend"
     },
     "web": {
       "bundler": "metro",
@@ -32,10 +34,29 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
+      ],
+      "expo-font",
+      "expo-secure-store",
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "androidClientId": "918689352423-5n4nb7m0vt000ue8f34t2864n05rgm1c.apps.googleusercontent.com",
+          "iosClientId": "918689352423-p0h573hsr95on44gld35adtpd0hgt604.apps.googleusercontent.com",
+          "weClientId":"918689352423-ls8sjek27c0n0p0el97op1vcmtg7s48s.apps.googleusercontent.com",
+          "iosUrlScheme":"com.googleusercontent.apps.918689352423-p0h573hsr95on44gld35adtpd0hgt604"
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "bb019bf9-0d56-44d4-8253-5a43567574b6"
+      }
     }
   }
 }

@@ -2,9 +2,70 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
+    "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./*"
+      "@audioSlice": [
+        "store/slices/audioSlice"
+      ],
+      "@grocerySlice": [
+        "store/slices/grocerySlice"
+      ],
+      "@mediaSlice": [
+        "store/slices/mediaSlice"
+      ],
+      "@menuSlice": [
+        "store/slices/menuSlice"
+      ],
+      "@recipeSlice": [
+        "store/slices/recipes/recipeSlice"
+      ],
+      "@recipeDetailSlice": [
+        "store/slices/recipes/recipeDetailSlice"
+      ],
+      "@recipeIngredientSlice": [
+        "store/slices/recipes/recipeIngredientSlice"
+      ],
+      "@recipeInstructionSlice": [
+        "store/slices/recipes/recipeInstructionSlice"
+      ],
+      "@recipeLabelSlice": [
+        "store/slices/recipes/recipeLabelSlice"
+      ],
+      "@recipeRatingSlice": [
+        "store/slices/recipes/recipeRatingSlice"
+      ],
+      "@recipeScrapeSlice": [
+        "store/slices/recipes/recipeScrapeSlice"
+      ],
+      "@selectedRecipeSlice": [
+        "store/slices/recipes/selectedRecipeSlice"
+      ],
+      "@themeSlice": [
+        "store/slices/themeSlice"
+      ],
+      "@userAuthSlice": [
+        "store/slices/userAuthSlice"
+      ],
+      "@userProfileSlice": [
+        "store/slices/userProfileSlice"
+      ],
+      "@store": [
+        "store/store"
+      ],
+      "@axiosInstance": [
+        "utils/axiosInstance"
+      ],
+      "@images/*": [
+        "assets/images/*"
+      ],
+      "@fonts/*": [
+        "assets/fonts/*"
+      ],
+      "@types": [
+        "types"
+      ],
+      "@utils/*": [
+        "utils/*"
       ]
     }
   },
