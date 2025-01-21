@@ -1,9 +1,8 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 
-
 // Create the Axios instance with the updated environment variable
 const axiosInstance: AxiosInstance = axios.create({
-    baseURL: process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000",
+    baseURL: process.env.EXPO_PUBLIC_NETWORK_BACKEND_URL || "http://localhost:3000",
     timeout: 10000,
     withCredentials: true,
 });

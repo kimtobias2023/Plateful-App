@@ -84,32 +84,37 @@ export const signup = createAsyncThunk<
   }
 });
 
-// Using "idToken" instead of "code"
 export const fetchGoogleUser = createAsyncThunk<
-  User, // Return type
-  { idToken: string }, // Payload
+  User, // Return type: user data
+  { authCode: string; codeVerifier: string }, // Payload type
   { rejectValue: string }
->('auth/fetchGoogleUser', async ({ idToken }, { rejectWithValue }) => {
-  console.log('[fetchGoogleUser] Called with ID token:', idToken);
-
+>('auth/fetchGoogleUser', async ({ authCode, codeVerifier }, { rejectWithValue }) => {
   try {
-    console.log('[fetchGoogleUser] Making API request to /users/auth/google-signin...');
+    await setCsrfToken();
+    console.log('[fetchGoogleUser] Sending authCode and codeVerifier to the backend...');
+
     const response = await makeRequest({
       method: 'POST',
       url: '/users/auth/google-signin',
-      data: { idToken },
+      data: {
+        authCode,
+        codeVerifier, // Ensure this is included
+      },
     });
 
-    console.log('[fetchGoogleUser] API response:', response.data);
-    return response.data.user; // Assuming the server returns { user }
-  } catch (error: any) {
-    console.error('[fetchGoogleUser] API request failed:', error);
-    if (error.response) {
-      console.error('[fetchGoogleUser] Error response data:', error.response.data);
+    if (!response || !response.data || !response.data.user) {
+      throw new Error('Invalid response from the backend.');
     }
-    return rejectWithValue(
-      error.response?.data?.message || 'Failed to fetch Google user'
-    );
+
+    console.log('[fetchGoogleUser] Backend response:', response.data);
+    return response.data.user;
+  } catch (error) {
+    console.error('[fetchGoogleUser] API request failed:', error);
+
+    if (error instanceof Error) {
+      return rejectWithValue(error.message);
+    }
+    return rejectWithValue('Failed to fetch Google user.');
   }
 });
 
@@ -192,6 +197,8 @@ export const selectVerificationMessage = (state: { auth: UserState }) =>
 export const selectLoadingState = (state: { auth: UserState }) => state.auth.isLoading;
 export const selectSignupSuccess = (state: { auth: UserState }) =>
   state.auth.status === 'succeeded';
+export const selectGoogleSignInError = (state: { auth: UserState }) => state.auth.error;
+export const selectGoogleSignInLoading = (state: { auth: UserState }) => state.auth.isLoading;
 
 // Slice
 const userAuthSlice = createSlice({
@@ -264,8 +271,8 @@ const userAuthSlice = createSlice({
         state.error = (action.payload as string) || 'Verification failed.';
       });
 
-    // Fetch Google User
-      builder
+    // Extra reducers for Google Sign-In
+    builder
       .addCase(fetchGoogleUser.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -273,10 +280,11 @@ const userAuthSlice = createSlice({
       .addCase(fetchGoogleUser.fulfilled, (state, action: PayloadAction<User>) => {
         state.isLoading = false;
         state.user = action.payload;
+        state.isAuthenticated = true;
       })
       .addCase(fetchGoogleUser.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload || 'An error occurred';
+        state.error = action.payload || 'An error occurred while signing in with Google.';
       });
   },
 });

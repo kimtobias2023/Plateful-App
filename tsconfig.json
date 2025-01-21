@@ -55,6 +55,12 @@
       "@axiosInstance": [
         "utils/axiosInstance"
       ],
+      "@components/*": [
+        "components/*"
+      ],
+      "@hooks/*": [
+        "hooks/*"
+      ],
       "@images/*": [
         "assets/images/*"
       ],
@@ -73,6 +79,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts"
+    "expo-env.d.ts",
+    "google-signin.d.ts"
   ]
 }

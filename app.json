@@ -36,16 +36,7 @@
         }
       ],
       "expo-font",
-      "expo-secure-store",
-      [
-        "@react-native-google-signin/google-signin",
-        {
-          "androidClientId": "918689352423-5n4nb7m0vt000ue8f34t2864n05rgm1c.apps.googleusercontent.com",
-          "iosClientId": "918689352423-p0h573hsr95on44gld35adtpd0hgt604.apps.googleusercontent.com",
-          "weClientId":"918689352423-ls8sjek27c0n0p0el97op1vcmtg7s48s.apps.googleusercontent.com",
-          "iosUrlScheme":"com.googleusercontent.apps.918689352423-p0h573hsr95on44gld35adtpd0hgt604"
-        }
-      ]
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true
@@ -56,7 +47,11 @@
       },
       "eas": {
         "projectId": "bb019bf9-0d56-44d4-8253-5a43567574b6"
-      }
+      },
+      "GOOGLE_WEB_CLIENT_ID": "918689352423-ls8sjek27c0n0p0el97op1vcmtg7s48s.apps.googleusercontent.com",
+      "GOOGLE_IOS_CLIENT_ID": "918689352423-p0h573hsr95on44gld35adtpd0hgt604.apps.googleusercontent.com",
+      "GOOGLE_ANDROID_CLIENT_ID": "918689352423-5n4nb7m0vt000ue8f34t2864n05rgm1c.apps.googleusercontent.com",
+      "GOOGLE_REDIRECT_URI": "com.kimtobias.frontend:/oauthredirect"
     }
   }
 }

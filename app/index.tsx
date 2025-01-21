@@ -1,108 +1,102 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router';
+import React from 'react';
+import { Alert, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
+import * as Google from 'expo-auth-session/providers/google';
 import Constants from 'expo-constants';
-import {
-  GoogleSignin,
-  GoogleSigninButton,
-  statusCodes,
-} from '@react-native-google-signin/google-signin';
+import { useRouter } from 'expo-router';
 
-
-GoogleSignin.configure({
-  webClientId: Constants.expoConfig?.extra?.webClientId,
-  scopes: ['openid', 'email', 'profile'],
-  offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
-  forceCodeForRefreshToken: false, // [Android] related to `serverAuthCode`, read the docs link below *.
-  iosClientId: Constants.expoConfig?.extra?.iosClientId,
-});
+WebBrowser.maybeCompleteAuthSession();
 
 export default function HomeScreen() {
   const router = useRouter();
-  const handleGoogleAuth = async () => {
-    // Implement your Google sign-in logic here
-    console.log('Google sign-in triggered');
+
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    clientId: Constants.expoConfig?.extra?.GOOGLE_WEB_CLIENT_ID,
+    iosClientId: Constants.expoConfig?.extra?.GOOGLE_IOS_CLIENT_ID,
+    androidClientId: Constants.expoConfig?.extra?.GOOGLE_ANDROID_CLIENT_ID,
+    scopes: ['openid', 'email', 'profile'],
+    responseType: 'code',
+    usePKCE: true, // Enable PKCE
+  });
+
+  // Log the codeChallenge (if available)
+  React.useEffect(() => {
+    if (request?.codeChallenge) {
+      console.log('Code Challenge:', request.codeChallenge); // Log the code challenge for debugging
+    } else {
+      console.log('Code Challenge is not available yet.');
+    }
+  }, [request]);
+  
+  const handleGoogleSignIn = async () => {
+    if (!request) {
+      Alert.alert('Error', 'Google sign-in is not configured correctly.');
+      return;
+    }
+  
+    const result = await promptAsync();
+  
+    if (result.type === 'success') {
+      const authCode = result.params.code;
+      const codeVerifier = request.codeVerifier; // Get the codeVerifier
+  
+      if (authCode && codeVerifier) {
+        console.log('Authorization Code:', authCode);
+        console.log('Code Verifier:', codeVerifier);
+  
+        // Add the log for debugging before redirecting
+        console.log('Redirecting with:', {
+          authCode,
+          codeVerifier,
+          url: `/oauthredirect?code=${encodeURIComponent(authCode)}&codeVerifier=${encodeURIComponent(codeVerifier)}`,
+        });
+  
+        // Redirect to the OAuthRedirect component with query params
+        router.push(`/oauthredirect?code=${encodeURIComponent(authCode)}&codeVerifier=${encodeURIComponent(codeVerifier)}`);
+      } else {
+        Alert.alert('Error', 'Failed to retrieve authorization code or code verifier.');
+      }
+    } else {
+      Alert.alert('Error', 'Sign-in was canceled or failed.');
+    }
   };
+  
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to Plateful</Text>
-
-      {/* Official Google Sign-In Button */}
-      <GoogleSigninButton
-        style={styles.googleSigninButton}
-        size={GoogleSigninButton.Size.Wide}
-        color={GoogleSigninButton.Color.Dark}
-        onPress={handleGoogleAuth}
-        disabled={false} // Adjust this dynamically based on your app's logic
-      />
-
-      {/* Facebook Sign-In (placeholder) */}
-      <TouchableOpacity
-        onPress={() => console.log('Facebook sign-in triggered')}
-        style={styles.facebookButton}
-      >
-        <Text style={styles.buttonText}>Sign in with Facebook</Text>
-      </TouchableOpacity>
-
-      {/* Apple Sign-In (placeholder) */}
-      <TouchableOpacity
-        onPress={() => console.log('Apple sign-in triggered')}
-        style={styles.appleButton}
-      >
-        <Text style={styles.buttonText}>Sign in with Apple</Text>
-      </TouchableOpacity>
-
-      {/* Regular Sign-In */}
-      <TouchableOpacity
-        onPress={() => console.log('Regular sign-in triggered')}
-        style={styles.signInButton}
-      >
-        <Text style={styles.buttonText}>Sign in</Text>
-      </TouchableOpacity>
-
-      {/* Regular Sign-Up */}
-      <TouchableOpacity
-        onPress={() => console.log('Regular sign-up triggered')}
-        style={styles.signUpButton}
-      >
-        <Text style={styles.linkText}>Sign up</Text>
+      <TouchableOpacity onPress={handleGoogleSignIn} style={styles.signInButton}>
+        <Text style={styles.buttonText}>Sign in with Google</Text>
       </TouchableOpacity>
     </View>
   );
 }
 
-// Example styles:
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f5f5f5' },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },
-  googleSigninButton: { width: 192, height: 48, marginBottom: 20 }, // Dimensions for Google button
-  facebookButton: {
-    backgroundColor: '#4267B2',
-    padding: 10,
-    borderRadius: 5,
-    marginBottom: 10,
-    width: '80%',
+  container: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#f5f5f5',
   },
-  appleButton: {
-    backgroundColor: '#000000',
-    padding: 10,
-    borderRadius: 5,
-    marginBottom: 10,
-    width: '80%',
-    alignItems: 'center',
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
   },
   signInButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#4285F4',
     padding: 10,
     borderRadius: 5,
     marginBottom: 10,
     width: '80%',
     alignItems: 'center',
   },
-  signUpButton: { marginTop: 10 },
-  buttonText: { color: '#FFFFFF', fontSize: 16, fontWeight: 'bold' },
-  linkText: { color: '#007AFF', fontSize: 16, textDecorationLine: 'underline' },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 });
+
+
