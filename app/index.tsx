@@ -1,58 +1,59 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Alert, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import Constants from 'expo-constants';
+import { useSession } from './ctx';
+import * as SecureStore from 'expo-secure-store';
 import { useRouter } from 'expo-router';
 
 WebBrowser.maybeCompleteAuthSession();
 
-export default function HomeScreen() {
+const HomeScreen: React.FC = () => {
+  const { signIn } = useSession();
   const router = useRouter();
 
   const [request, response, promptAsync] = Google.useAuthRequest({
-    clientId: Constants.expoConfig?.extra?.GOOGLE_WEB_CLIENT_ID,
-    iosClientId: Constants.expoConfig?.extra?.GOOGLE_IOS_CLIENT_ID,
-    androidClientId: Constants.expoConfig?.extra?.GOOGLE_ANDROID_CLIENT_ID,
+    iosClientId: Constants.expoConfig?.extra?.GOOGLE_IOS_CLIENT_ID ?? '',
+    androidClientId: Constants.expoConfig?.extra?.GOOGLE_ANDROID_CLIENT_ID ?? '',
     scopes: ['openid', 'email', 'profile'],
     responseType: 'code',
-    usePKCE: true, // Enable PKCE
+    usePKCE: true,
   });
 
-  // Log the codeChallenge (if available)
-  React.useEffect(() => {
+  useEffect(() => {
     if (request?.codeChallenge) {
-      console.log('Code Challenge:', request.codeChallenge); // Log the code challenge for debugging
+      console.log('[HomeScreen] Code Challenge:', request.codeChallenge);
     } else {
-      console.log('Code Challenge is not available yet.');
+      console.log('[HomeScreen] Code Challenge is not available yet.');
     }
   }, [request]);
-  
+
   const handleGoogleSignIn = async () => {
     if (!request) {
       Alert.alert('Error', 'Google sign-in is not configured correctly.');
       return;
     }
-  
+
+    // Remove any old codeVerifier from previous sessions
+    await SecureStore.deleteItemAsync('temp_code_verifier');
+
+    // Begin sign-in
     const result = await promptAsync();
-  
+
     if (result.type === 'success') {
       const authCode = result.params.code;
-      const codeVerifier = request.codeVerifier; // Get the codeVerifier
-  
+      const codeVerifier = request.codeVerifier; // Retrieve the codeVerifier from expo-auth-session
+
       if (authCode && codeVerifier) {
-        console.log('Authorization Code:', authCode);
-        console.log('Code Verifier:', codeVerifier);
-  
-        // Add the log for debugging before redirecting
-        console.log('Redirecting with:', {
-          authCode,
-          codeVerifier,
-          url: `/oauthredirect?code=${encodeURIComponent(authCode)}&codeVerifier=${encodeURIComponent(codeVerifier)}`,
-        });
-  
-        // Redirect to the OAuthRedirect component with query params
-        router.push(`/oauthredirect?code=${encodeURIComponent(authCode)}&codeVerifier=${encodeURIComponent(codeVerifier)}`);
+        console.log('[HomeScreen] Authorization Code:', authCode);
+        console.log('[HomeScreen] Storing codeVerifier:', codeVerifier);
+
+        // Securely store the new codeVerifier
+        await SecureStore.setItemAsync('temp_code_verifier', codeVerifier);
+
+        // Navigate with only authCode
+        router.push(`/oauthredirect?code=${encodeURIComponent(authCode)}`);
       } else {
         Alert.alert('Error', 'Failed to retrieve authorization code or code verifier.');
       }
@@ -60,43 +61,30 @@ export default function HomeScreen() {
       Alert.alert('Error', 'Sign-in was canceled or failed.');
     }
   };
-  
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome to Plateful</Text>
-      <TouchableOpacity onPress={handleGoogleSignIn} style={styles.signInButton}>
+      <Text style={styles.title}>Welcome to the App</Text>
+      <TouchableOpacity onPress={handleGoogleSignIn} style={styles.button}>
         <Text style={styles.buttonText}>Sign in with Google</Text>
       </TouchableOpacity>
     </View>
   );
-}
+};
+
+export default HomeScreen;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    flex: 1, justifyContent: 'center', alignItems: 'center',
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
+    fontSize: 24, fontWeight: 'bold', marginBottom: 20,
   },
-  signInButton: {
-    backgroundColor: '#4285F4',
-    padding: 10,
-    borderRadius: 5,
-    marginBottom: 10,
-    width: '80%',
-    alignItems: 'center',
+  button: {
+    padding: 15, backgroundColor: '#4285F4', borderRadius: 5,
   },
   buttonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: '#fff', fontSize: 16, fontWeight: 'bold',
   },
 });
-
-

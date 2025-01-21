@@ -2,6 +2,9 @@
 #Environment Variables
 .env
 
+#Config
+app.json
+
 # dependencies
 node_modules/
 
