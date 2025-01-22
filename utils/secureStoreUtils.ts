@@ -1,21 +1,21 @@
+// secureStoreUtils.ts
 import * as SecureStore from 'expo-secure-store';
+import { addSecureStoreOperation } from './secureStoreQueue';
 
-// Save state to SecureStore
-export const saveStateToSecureStore = async (key: string, state: any) => {
-  try {
-    await SecureStore.setItemAsync(key, JSON.stringify(state));
-  } catch (error) {
-    console.error(`Error saving state to SecureStore for key "${key}":`, error);
-  }
-};
+export function setQueuedItem(key: string, value: string | null): Promise<void> {
+  return addSecureStoreOperation<void>(async () => {
+    if (value === null) {
+      await SecureStore.deleteItemAsync(key);
+    } else {
+      await SecureStore.setItemAsync(key, value);
+    }
+  });
+}
 
-// Load state from SecureStore
-export const loadStateFromSecureStore = async (key: string) => {
-  try {
-    const state = await SecureStore.getItemAsync(key);
-    return state ? JSON.parse(state) : undefined;
-  } catch (error) {
-    console.error(`Error loading state from SecureStore for key "${key}":`, error);
-    return undefined;
-  }
-};
+export function getQueuedItem(key: string): Promise<string | null> {
+  return addSecureStoreOperation<string | null>(async () => {
+    const val = await SecureStore.getItemAsync(key);
+    return val; // Return the read value
+  });
+}
+

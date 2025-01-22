@@ -1,7 +1,10 @@
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import React from "react";
+import { useSession } from "../ctx";
 
 const AuthLayout: React.FC = () => {
+  const router = useRouter();
+
   return (
     <Stack>
       <Stack.Screen
@@ -45,4 +48,3 @@ const AuthLayout: React.FC = () => {
 };
 
 export default AuthLayout;
-

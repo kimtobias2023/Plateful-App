@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { axiosInstance, makeRequest, setAuthToken, setCsrfToken } from '@axiosInstance';
 import { setMedia } from '@mediaSlice'; // Adjust the path as needed
-
+import { setQueuedItem } from '@utils/secureStoreUtils';
 
 export interface User {
   id: string;
@@ -83,6 +83,32 @@ export const signup = createAsyncThunk<
     );
   }
 });
+
+export const signInWithGoogle = createAsyncThunk<
+  void, // Return type (could be user data if your backend returns it)
+  { authCode: string; codeVerifier: string } // Arg type
+>(
+  'auth/signInWithGoogle',
+  async ({ authCode, codeVerifier }, { rejectWithValue }) => {
+    try {
+      // 1) Store codeVerifier in secure store
+      await setQueuedItem('temp_code_verifier', codeVerifier);
+
+      // 2) Optionally, immediately exchange code + codeVerifier here
+      //    or simply navigate to OAuthRedirect screen to do it there.
+      //    For example:
+      // const tokens = await exchangeGoogleToken({ authCode, codeVerifier });
+      // await setQueuedItem('access_token', tokens.access_token);
+      // ...
+
+      // 3) You might navigate or update state:
+      // e.g., dispatch some success action
+    } catch (error) {
+      console.error('[signInWithGoogle] Error:', error);
+      return rejectWithValue('Failed to sign in with Google');
+    }
+  }
+);
 
 export const fetchGoogleUser = createAsyncThunk<
   User, // Return type: user data

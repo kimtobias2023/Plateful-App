@@ -1,48 +1,77 @@
-import { useContext, createContext, type PropsWithChildren } from 'react';
-import { useStorageState } from '../hooks/useStorageState';
+// ctx.tsx
+import React, { createContext, useContext, useState, useEffect, PropsWithChildren } from 'react';
+import { setQueuedItem, getQueuedItem } from '../utils/secureStoreUtils'; 
+// the queue-based setItemAsync/getItemAsync
 
-const AuthContext = createContext<{
-  signIn: () => void;
-  signOut: () => void;
-  session?: string | null;
-  isLoading: boolean;
-}>({
-  signIn: () => null,
-  signOut: () => null,
-  session: null,
-  isLoading: false,
-});
+interface SessionContextValue {
+  codeVerifier?: string;
+  setCodeVerifier: (cv: string) => void;
 
-// This hook can be used to access the user info.
-export function useSession() {
-  const value = useContext(AuthContext);
-  if (process.env.NODE_ENV !== 'production') {
-    if (!value) {
-      throw new Error('useSession must be wrapped in a <SessionProvider />');
-    }
+  accessToken?: string;
+  signIn: (token: string) => Promise<void>;
+  signOut: () => Promise<void>;
+  loadTokensFromSecureStore: () => Promise<void>;
+}
+
+const SessionContext = createContext<SessionContextValue | null>(null);
+
+export function SessionProvider({ children }: PropsWithChildren) {
+  // Ephemeral PKCE codeVerifier
+  const [codeVerifier, setCodeVerifier] = useState<string | undefined>(undefined);
+
+  // Access token stored in memory after we load it from secure store or sign in
+  const [accessToken, setAccessToken] = useState<string | undefined>(undefined);
+
+  /**
+   * signIn: store an access token in both SecureStore (queued) and memory
+   */
+  async function signIn(token: string) {
+    // 1) Write to secure store, concurrency-safe via queue
+    await setQueuedItem('access_token', token);
+    // 2) Update in-memory state
+    setAccessToken(token);
   }
 
+  /**
+   * signOut: remove the access token from secure store & memory
+   */
+  async function signOut() {
+    await setQueuedItem('access_token', null);
+    setAccessToken(undefined);
+  }
+
+  /**
+   * loadTokensFromSecureStore: read from secure store on app startup (or whenever)
+   */
+  async function loadTokensFromSecureStore() {
+    const storedToken = await getQueuedItem('access_token');
+    setAccessToken(storedToken ?? undefined);
+  }
+
+  const value: SessionContextValue = {
+    codeVerifier,
+    setCodeVerifier,
+
+    accessToken,
+    signIn,
+    signOut,
+    loadTokensFromSecureStore,
+  };
+
+  return (
+    <SessionContext.Provider value={value}>
+      {children}
+    </SessionContext.Provider>
+  );
+}
+
+export function useSession() {
+  const value = useContext(SessionContext);
+  if (!value) {
+    throw new Error('useSession must be used within a SessionProvider.');
+  }
   return value;
 }
 
-export function SessionProvider({ children }: PropsWithChildren) {
-  const [[isLoading, session], setSession] = useStorageState('session');
-
-  return (
-    <AuthContext.Provider
-      value={{
-        signIn: () => {
-          // Perform sign-in logic here
-          setSession('xxx');
-        },
-        signOut: () => {
-          setSession(null);
-        },
-        session,
-        isLoading,
-      }}>
-      {children}
-    </AuthContext.Provider>
-  );
-}
+export default { useSession, SessionProvider };
 
