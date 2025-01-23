@@ -41,12 +41,14 @@ export default function HomeScreen() {
           console.log('[HomeScreen] Authorization Code:', authCode);
           console.log('[HomeScreen] Code Verifier:', codeVerifier);
 
-          // Dispatch the thunk to handle token exchange and state updates
           const resultAction = await dispatch(signInWithGoogle({ authCode, codeVerifier }));
 
           if (signInWithGoogle.fulfilled.match(resultAction)) {
             console.log('[HomeScreen] Google sign-in completed successfully.');
-            router.replace('/(app)'); // Replace with the path to your dashboard
+            console.log('[HomeScreen] Navigating to Dashboard...');
+            
+            // Navigate to authenticated dashboard
+            router.replace('/(authenticated)');
           } else {
             Alert.alert('Error', resultAction.payload || 'Sign-in failed.');
           }

@@ -1,15 +1,14 @@
-//types.ts
-
-// Define your navigation parameter list
+// types.ts
 export type RootStackParamList = {
-    dashboard: undefined;
-    recipes: { recipeId: string }; // Example: Passing a recipeId to the recipes screen
-    menu: undefined;
-    web: { url: string }; // Example: Passing a URL to the web screen
-    profile: undefined;
-    login: undefined;
-    signup: undefined;
-  };
-  
+  dashboard: undefined;
+  recipes: undefined; // No parameters for this example
+  menu: undefined;
+  web: undefined; // No parameters passed for now
+  profile: undefined;
+  login: undefined;
+  signup: undefined;
+  oauthredirect: undefined;
+};
+
 
   

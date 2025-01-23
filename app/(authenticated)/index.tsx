@@ -10,6 +10,7 @@ import { MaterialCommunityIcons, FontAwesome } from "@expo/vector-icons";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../types/types"; // Adjust the path to your `types.ts` file
 import { useNavigation } from "@react-navigation/native";
+import { useSession } from "./../ctx";
 
 type ButtonConfig = {
   title: string;
@@ -21,7 +22,8 @@ type ButtonConfig = {
 const DashboardScreen: React.FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-
+    const { signOut } = useSession();
+  
   const buttons: ButtonConfig[] = [
     {
       title: "Recipes",
@@ -62,6 +64,15 @@ const DashboardScreen: React.FC = () => {
     }
   };
 
+  const handleLogout = async () => {
+    await signOut(); // Clear session
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'oauthredirect' }], // Reset navigation stack
+    });
+  };
+  
+  
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {/* Welcome Message */}

@@ -1,9 +1,10 @@
 import React, { useEffect } from "react";
-import { Text } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { Slot, useRouter } from "expo-router";
-import { useSession } from "./../ctx";
+import { useSession } from "../ctx";
+import { Header } from "@components/Header"; // Import your Header component
 
-export default function AppLayout() {
+export default function AuthenticatedLayout() {
   const router = useRouter();
   const { isAuthenticated, isLoading } = useSession();
 
@@ -14,11 +15,37 @@ export default function AppLayout() {
   }, [isLoading, isAuthenticated, router]);
 
   if (isLoading) {
-    return <Text>Loading...</Text>;
+    return (
+      <View style={styles.loadingContainer}>
+        <Text>Loading...</Text>
+      </View>
+    );
   }
 
-  return <Slot />;
+  return (
+    <View style={styles.container}>
+      {/* Add the header */}
+      <Header />
+
+      {/* Render the Slot */}
+      <Slot />
+    </View>
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+  },
+});
+
 
 
 
