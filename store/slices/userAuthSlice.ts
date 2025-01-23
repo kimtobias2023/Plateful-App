@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { axiosInstance, makeRequest, setAuthToken, setCsrfToken } from '@axiosInstance';
 import { setMedia } from '@mediaSlice'; // Adjust the path as needed
 import { setQueuedItem } from '@utils/secureStoreUtils';
+import Constants from 'expo-constants';
 
 export interface User {
   id: string;
@@ -85,27 +86,56 @@ export const signup = createAsyncThunk<
 });
 
 export const signInWithGoogle = createAsyncThunk<
-  void, // Return type (could be user data if your backend returns it)
-  { authCode: string; codeVerifier: string } // Arg type
+  void, // Return type (adjust as needed, e.g., token or user data)
+  { authCode: string; codeVerifier: string }, // Arguments
+  { rejectValue: string } // Error handling type
 >(
   'auth/signInWithGoogle',
   async ({ authCode, codeVerifier }, { rejectWithValue }) => {
     try {
-      // 1) Store codeVerifier in secure store
+      // Store the codeVerifier securely
       await setQueuedItem('temp_code_verifier', codeVerifier);
 
-      // 2) Optionally, immediately exchange code + codeVerifier here
-      //    or simply navigate to OAuthRedirect screen to do it there.
-      //    For example:
-      // const tokens = await exchangeGoogleToken({ authCode, codeVerifier });
-      // await setQueuedItem('access_token', tokens.access_token);
-      // ...
+      // Exchange the authorization code for tokens
+      const response = await fetch('https://oauth2.googleapis.com/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          code: authCode,
+          client_id:
+            Constants.expoConfig?.extra?.GOOGLE_ANDROID_CLIENT_ID ||
+            Constants.expoConfig?.extra?.GOOGLE_IOS_CLIENT_ID ||
+            '',
+          redirect_uri: Constants.expoConfig?.extra?.GOOGLE_REDIRECT_URI || '',
+          grant_type: 'authorization_code',
+          code_verifier: codeVerifier,
+        }).toString(),
+      });
 
-      // 3) You might navigate or update state:
-      // e.g., dispatch some success action
+      const tokens = await response.json();
+      if (!response.ok || !tokens.access_token) {
+        console.error('[signInWithGoogle] Token Exchange Error:', tokens);
+        throw new Error(
+          tokens.error_description || 'Failed to exchange auth code for tokens.'
+        );
+      }
+
+      // Store tokens securely (e.g., SecureStore)
+      await setQueuedItem('access_token', tokens.access_token);
+      if (tokens.refresh_token) {
+        await setQueuedItem('refresh_token', tokens.refresh_token);
+      }
+
+      console.log('[signInWithGoogle] Tokens successfully stored.');
+      // Additional: Update Redux state or dispatch further actions as needed
+
     } catch (error) {
       console.error('[signInWithGoogle] Error:', error);
-      return rejectWithValue('Failed to sign in with Google');
+      return rejectWithValue(
+        error instanceof Error ? error.message : 'Token exchange failed.'
+      );
     }
   }
 );

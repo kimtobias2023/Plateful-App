@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { MaterialCommunityIcons, FontAwesome } from "@expo/vector-icons";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "@types"; // Adjust the path to your `types.ts` file
+import { RootStackParamList } from "../../types/types"; // Adjust the path to your `types.ts` file
 import { useNavigation } from "@react-navigation/native";
 
 type ButtonConfig = {
@@ -138,6 +138,4 @@ const styles = StyleSheet.create({
 });
 
 export default DashboardScreen;
-
-
 

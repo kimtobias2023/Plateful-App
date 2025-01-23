@@ -1,81 +1,24 @@
 import React, { useEffect } from "react";
-import { Tabs, useRouter } from "expo-router";
-import { useSelector } from "react-redux";
-import { RootState } from "@store"; // Redux store type
-import { MaterialIcons } from "@expo/vector-icons";
+import { Text } from "react-native";
+import { Slot, useRouter } from "expo-router";
+import { useSession } from "./../ctx";
 
-export default function AuthenticatedLayout() {
+export default function AppLayout() {
   const router = useRouter();
-  const isAuthenticated = useSelector(
-    (state: RootState) => state.auth?.isAuthenticated
-  );
+  const { isAuthenticated, isLoading } = useSession();
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.replace("/(auth)/login"); // Redirect to login if not authenticated
+    if (!isLoading && !isAuthenticated) {
+      router.replace("/oauthredirect"); // Redirect to login if not authenticated
     }
-  }, [isAuthenticated]);
+  }, [isLoading, isAuthenticated, router]);
 
-  if (!isAuthenticated) return null; // Show a loading state if needed
+  if (isLoading) {
+    return <Text>Loading...</Text>;
+  }
 
-  return (
-    <Tabs>
-      <Tabs.Screen
-        name="dashboard"
-        options={{
-          title: "Dashboard",
-          tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="dashboard" color={color} size={size} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="recipes"
-        options={{
-          title: "Recipes",
-          tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="menu-book" color={color} size={size} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="menu"
-        options={{
-          title: "Menu",
-          tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="restaurant-menu" color={color} size={size} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="web"
-        options={{
-          title: "Web",
-          tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="public" color={color} size={size} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: "Profile",
-          tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="person" color={color} size={size} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: "Settings",
-          tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="settings" color={color} size={size} />
-          ),
-        }}
-      />
-    </Tabs>
-  );
+  return <Slot />;
 }
+
 
 

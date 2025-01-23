@@ -12,10 +12,4 @@ export type RootStackParamList = {
   };
   
 
-  // google-signin-override.d.ts
-declare module '@react-native-google-signin/google-signin' {
-    interface User {
-      serverAuthCode?: string;
-    }
-  }
   

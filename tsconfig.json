@@ -55,6 +55,9 @@
       "@axiosInstance": [
         "utils/axiosInstance"
       ],
+      "@constants/*": [
+        "constants/*"
+      ],
       "@components/*": [
         "components/*"
       ],
@@ -79,6 +82,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
+    "types/declarations.d.ts",
     "expo-env.d.ts",
     "google-signin.d.ts"
   ]

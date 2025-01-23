@@ -1,13 +1,13 @@
-// ctx.tsx
 import React, { createContext, useContext, useState, useEffect, PropsWithChildren } from 'react';
-import { setQueuedItem, getQueuedItem } from '../utils/secureStoreUtils'; 
-// the queue-based setItemAsync/getItemAsync
+import { setQueuedItem, getQueuedItem } from '@utils/secureStoreUtils'; 
 
 interface SessionContextValue {
   codeVerifier?: string;
   setCodeVerifier: (cv: string) => void;
 
   accessToken?: string;
+  isAuthenticated: boolean;
+  isLoading: boolean;
   signIn: (token: string) => Promise<void>;
   signOut: () => Promise<void>;
   loadTokensFromSecureStore: () => Promise<void>;
@@ -16,19 +16,15 @@ interface SessionContextValue {
 const SessionContext = createContext<SessionContextValue | null>(null);
 
 export function SessionProvider({ children }: PropsWithChildren) {
-  // Ephemeral PKCE codeVerifier
   const [codeVerifier, setCodeVerifier] = useState<string | undefined>(undefined);
-
-  // Access token stored in memory after we load it from secure store or sign in
   const [accessToken, setAccessToken] = useState<string | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(true);
 
   /**
    * signIn: store an access token in both SecureStore (queued) and memory
    */
   async function signIn(token: string) {
-    // 1) Write to secure store, concurrency-safe via queue
     await setQueuedItem('access_token', token);
-    // 2) Update in-memory state
     setAccessToken(token);
   }
 
@@ -41,18 +37,31 @@ export function SessionProvider({ children }: PropsWithChildren) {
   }
 
   /**
-   * loadTokensFromSecureStore: read from secure store on app startup (or whenever)
+   * loadTokensFromSecureStore: read from secure store on app startup
    */
   async function loadTokensFromSecureStore() {
     const storedToken = await getQueuedItem('access_token');
     setAccessToken(storedToken ?? undefined);
   }
 
+  /**
+   * Initialize tokens on app startup
+   */
+  useEffect(() => {
+    async function initialize() {
+      await loadTokensFromSecureStore();
+      setIsLoading(false);
+    }
+    initialize();
+  }, []);
+
   const value: SessionContextValue = {
     codeVerifier,
     setCodeVerifier,
 
     accessToken,
+    isAuthenticated: !!accessToken, // Derived value
+    isLoading,
     signIn,
     signOut,
     loadTokensFromSecureStore,
