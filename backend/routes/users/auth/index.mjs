@@ -8,11 +8,13 @@ import {
   verifyLoginLinkController,
   validateSessionController,
   logoutController,
-  googleAuthController
+  googleAuthController,
 } from '../../../controllers/users/auth/index.mjs';
+import { sessionMiddleware } from '../../../middleware/index.mjs'; // Only import sessionMiddleware
 
 const router = express.Router();
 
+// Public routes (no session validation required)
 router.post('/forgot-password', forgotPasswordController);
 router.post('/login', loginController);
 router.post('/register', registerController);
@@ -22,7 +24,11 @@ router.post('/google-signin', (req, res, next) => {
 }, googleAuthController);
 router.post('/reset-password', resetPasswordController);
 router.get('/verify-login/:token', verifyLoginLinkController);
-router.post('/refresh-token', refreshAccessTokenController);
+
+// Protected routes (require session validation)
+router.use(sessionMiddleware); // Apply sessionMiddleware to all routes below this line
+
+router.post('/refresh-token', refreshAccessTokenController); // Example of a route requiring session validation
 router.post('/logout', logoutController);
 router.get('/session-validate', validateSessionController);
 

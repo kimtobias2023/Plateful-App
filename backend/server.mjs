@@ -62,7 +62,7 @@ const corsOrigins = process.env.CORS_ORIGINS.split(',');
 
 // CORS Middleware: Allows specific origins and headers
 const corsOptions = {
-    origin: ['http://192.168.0.141:8081', 'http://localhost:8081', 'http://192.168.0.141:3001', 'http://localhost:3001'],
+    origin: corsOrigins,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
     exposedHeaders: ['x-csrf-token'],

@@ -10,6 +10,7 @@ import { permissionsMiddleware } from './permissionsMiddleware.mjs';
 import { loginLimiterMiddleware } from './loginLimiterMiddleware.mjs';
 import { recipeValidationMiddleware } from './recipeValidationMiddleware.mjs';
 import { mediaUploadMiddleware } from './mediaUploadMiddleware.mjs';
+import { sessionMiddleware } from './sessionMiddleware.mjs';
 // Export the modules using named exports
 export {
     mediaUploadMiddleware,
@@ -21,6 +22,7 @@ export {
     permissionsMiddleware,
     loginLimiterMiddleware,
     recipeValidationMiddleware,
+    sessionMiddleware,
 };
 
 

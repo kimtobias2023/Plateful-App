@@ -1,9 +1,6 @@
 import { getRecipeByIdService } from '../services/recipes/recipeService.mjs';
 import { CustomError } from '../utils/errors/CustomError.mjs';
-import dotenv from 'dotenv';
-import jwt from 'jsonwebtoken';
 
-dotenv.config();
 
 const recipeAuthMiddleware = async (req, res, next) => {
     try {
