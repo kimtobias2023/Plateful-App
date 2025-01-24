@@ -2,19 +2,40 @@ import React, { useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Slot, useRouter } from "expo-router";
 import { useSession } from "../ctx";
-import { Header } from "@components/Header"; // Import your Header component
+import { Header } from "@components/Header";
+import { useAppDispatch, useAppSelector } from "@store";
+import { checkSubscriptionStatusThunk, selectSubscriptionStatus } from "@subscriptionSlice";
 
 export default function AuthenticatedLayout() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const { isAuthenticated, isLoading } = useSession();
 
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      router.replace("/oauthredirect"); // Redirect to login if not authenticated
-    }
-  }, [isLoading, isAuthenticated, router]);
+  const { isSubscribed, isCheckingSubscription } = useAppSelector(selectSubscriptionStatus);
 
-  if (isLoading) {
+  useEffect(() => {
+    if (!isLoading) {
+      if (!isAuthenticated) {
+        router.replace("/oauthredirect");
+      } else {
+        dispatch(checkSubscriptionStatusThunk());
+      }
+    }
+  }, [isAuthenticated, isLoading, dispatch, router]);
+
+  useEffect(() => {
+    if (!isLoading && !isCheckingSubscription) {
+      if (isAuthenticated) {
+        if (isSubscribed) {
+          router.replace("/(authenticated)");
+        } else {
+          router.replace("/subscription");
+        }
+      }
+    }
+  }, [isAuthenticated, isLoading, isSubscribed, isCheckingSubscription, router]);
+
+  if (isLoading || isCheckingSubscription) {
     return (
       <View style={styles.loadingContainer}>
         <Text>Loading...</Text>
@@ -24,10 +45,7 @@ export default function AuthenticatedLayout() {
 
   return (
     <View style={styles.container}>
-      {/* Add the header */}
       <Header />
-
-      {/* Render the Slot */}
       <Slot />
     </View>
   );
@@ -45,7 +63,4 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
 });
-
-
-
 

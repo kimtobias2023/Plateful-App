@@ -50,7 +50,7 @@ export default function ResetPasswordScreen(): JSX.Element {
 
       if (response.status === 200) {
         Alert.alert("Success", "Password has been reset successfully.");
-        router.push("/(auth)/login"); // Navigate to Login screen
+        router.push("/login"); // Navigate to Login screen
       } else {
         setMessage("Password reset failed. Please try again.");
       }
@@ -101,10 +101,10 @@ export default function ResetPasswordScreen(): JSX.Element {
         <TouchableOpacity onPress={() => router.push("/")}>
           <Text style={styles.link}>Home</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push("/(auth)/login")}>
+        <TouchableOpacity onPress={() => router.push("/login")}>
           <Text style={styles.link}>Login</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push("/(auth)/signup")}>
+        <TouchableOpacity onPress={() => router.push("/signup")}>
           <Text style={styles.link}>Signup</Text>
         </TouchableOpacity>
       </View>

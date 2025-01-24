@@ -1,7 +1,8 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { useDispatch, useSelector, TypedUseSelectorHook } from 'react-redux';
-import userAuthReducer from '@userAuthSlice';
-import userProfileReducer from '@userProfileSlice';
+import authReducer from 'store/slices/authSlice';
+import profileReducer from 'store/slices/profileSlice';
+import subscriptionReducer from "@subscriptionSlice";
 import mediaReducer from '@mediaSlice';
 import recipeReducer from '@recipeSlice';
 import recipeScrapeReducer from '@recipeScrapeSlice';
@@ -14,8 +15,9 @@ import themeReducer from '@themeSlice';
 
 // Combine reducers
 const rootReducer = combineReducers({
-  auth: userAuthReducer,
-  profile: userProfileReducer,
+  auth: authReducer,
+  profile: profileReducer,
+  subscription: subscriptionReducer,
   media: mediaReducer,
   recipe: recipeReducer,
   recipeScrape: recipeScrapeReducer,

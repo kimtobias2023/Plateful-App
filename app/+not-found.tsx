@@ -6,7 +6,7 @@ export default function NotFoundScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Page Not Found</Text>
-      <Link href="/(home)/index" style={styles.link}>
+      <Link href="/oauthredirect" style={styles.link}>
         Go Back to Home
       </Link>
     </View>

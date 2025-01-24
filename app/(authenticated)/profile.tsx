@@ -12,7 +12,7 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import { useDispatch, useSelector } from "react-redux";
 import { uploadMedia, updateMedia, deleteMedia } from "@mediaSlice";
-import { updateBio } from "@userProfileSlice";
+import { updateBio } from "store/slices/profileSlice";
 import { RootState, AppDispatch } from "@store";
 
 interface ProfileScreenProps {

@@ -11,7 +11,7 @@ import {
 import MaterialCommunityIcons from "@expo/vector-icons/Ionicons";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@store"; // Adjust path to Redux store
-import { signup, logout } from "@userAuthSlice";
+import { signup } from "store/slices/authSlice";
 import { useRouter } from "expo-router";
 
 type FormData = {

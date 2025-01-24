@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { axiosInstance } from '@axiosInstance';
-import { selectCurrentUser, selectCurrentUserId } from '@userAuthSlice';
+import { selectCurrentUser, selectCurrentUserId } from 'store/slices/authSlice';
 import { transformLabelData } from '@utils/transformLabelData';
 
 

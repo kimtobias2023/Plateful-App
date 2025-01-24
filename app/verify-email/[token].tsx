@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, ActivityIndicator, Button, StyleSheet, Alert } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
-import { verifyEmail } from "@userAuthSlice"; // Adjust path
+import { verifyEmail } from "store/slices/authSlice"; // Adjust path
 import { RootState, AppDispatch } from "@store"; // Adjust path
 
 const VerifyEmail: React.FC = () => {

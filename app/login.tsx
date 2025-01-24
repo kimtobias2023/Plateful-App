@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "expo-router";
-import { login } from "@userAuthSlice"; // Redux actions
+import { login } from "store/slices/authSlice"; // Redux actions
 import { AppDispatch, RootState } from "@store"; // Ensure you have these types
 
 const LoginScreen: React.FC = () => {

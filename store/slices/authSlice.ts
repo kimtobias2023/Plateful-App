@@ -1,8 +1,9 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { axiosInstance, makeRequest, setAuthToken, setCsrfToken } from '@axiosInstance';
 import { setMedia } from '@mediaSlice'; // Adjust the path as needed
-import { setQueuedItem } from '@utils/secureStoreUtils';
+import { setQueuedItem, getQueuedItem } from '@utils/secureStoreUtils';
 import Constants from 'expo-constants';
+
 
 export interface User {
   id: string;
@@ -19,7 +20,7 @@ interface SignupPayload {
   confirmPassword: string;
 }
 
-export interface UserState {
+export interface AuthState {
   user: User | null;
   sessionId: string | null;
   csrfToken: string | null;
@@ -32,7 +33,7 @@ export interface UserState {
 }
 
 // Initial state
-export const initialState: UserState = {
+export const initialState: AuthState = {
   user: null,
   sessionId: null,
   csrfToken: null,
@@ -61,7 +62,7 @@ export const signup = createAsyncThunk<
 
     const response = await makeRequest({
       method: 'post',
-      url: '/users/auth/register',
+      url: '/auth/register',
       data: newUser,
     });
 
@@ -86,12 +87,12 @@ export const signup = createAsyncThunk<
 });
 
 export const signInWithGoogle = createAsyncThunk<
-  void, // Return type (adjust as needed, e.g., token or user data)
-  { authCode: string; codeVerifier: string }, // Arguments
-  { rejectValue: string } // Error handling type
+  void,
+  { authCode: string; codeVerifier: string; session: { signIn: (token: string) => Promise<void> } },
+  { rejectValue: string }
 >(
   'auth/signInWithGoogle',
-  async ({ authCode, codeVerifier }, { rejectWithValue }) => {
+  async ({ authCode, codeVerifier, session }, { rejectWithValue }) => {
     try {
       // Store the codeVerifier securely
       await setQueuedItem('temp_code_verifier', codeVerifier);
@@ -129,8 +130,9 @@ export const signInWithGoogle = createAsyncThunk<
       }
 
       console.log('[signInWithGoogle] Tokens successfully stored.');
-      // Additional: Update Redux state or dispatch further actions as needed
 
+      // Use the session context to update the session
+      await session.signIn(tokens.access_token);
     } catch (error) {
       console.error('[signInWithGoogle] Error:', error);
       return rejectWithValue(
@@ -139,41 +141,6 @@ export const signInWithGoogle = createAsyncThunk<
     }
   }
 );
-
-export const fetchGoogleUser = createAsyncThunk<
-  User, // Return type: user data
-  { authCode: string; codeVerifier: string }, // Payload type
-  { rejectValue: string }
->('auth/fetchGoogleUser', async ({ authCode, codeVerifier }, { rejectWithValue }) => {
-  try {
-    await setCsrfToken();
-    console.log('[fetchGoogleUser] Sending authCode and codeVerifier to the backend...');
-
-    const response = await makeRequest({
-      method: 'POST',
-      url: '/users/auth/google-signin',
-      data: {
-        authCode,
-        codeVerifier, // Ensure this is included
-      },
-    });
-
-    if (!response || !response.data || !response.data.user) {
-      throw new Error('Invalid response from the backend.');
-    }
-
-    console.log('[fetchGoogleUser] Backend response:', response.data);
-    return response.data.user;
-  } catch (error) {
-    console.error('[fetchGoogleUser] API request failed:', error);
-
-    if (error instanceof Error) {
-      return rejectWithValue(error.message);
-    }
-    return rejectWithValue('Failed to fetch Google user.');
-  }
-});
-
 
 export const login = createAsyncThunk<
   { user: User; csrfToken: string },
@@ -187,7 +154,7 @@ export const login = createAsyncThunk<
 
       const response = await makeRequest({
         method: 'post',
-        url: '/users/auth/login',
+        url: '/auth/login',
         data: { email, password },
       });
 
@@ -208,7 +175,7 @@ export const login = createAsyncThunk<
 
 export const logout = createAsyncThunk('user/logout', async (_, { dispatch, rejectWithValue }) => {
   try {
-    const response = await axiosInstance.post('/users/auth/logout');
+    const response = await axiosInstance.post('/auth/logout');
     if (response.status === 200) {
       dispatch(setMedia([]));
       setAuthToken(null);
@@ -227,7 +194,7 @@ export const verifyEmail = createAsyncThunk<
 >('auth/verifyEmail', async ({ token }, { rejectWithValue }) => {
   try {
     const response = await axiosInstance.get<{ success: boolean; message: string }>(
-      `/users/auth/verify-login/${token}`
+      `/auth/verify-login/${token}`
     );
 
     if (!response?.data?.success) {
@@ -244,20 +211,46 @@ export const verifyEmail = createAsyncThunk<
   }
 });
 
+export const checkSubscriptionStatusThunk = createAsyncThunk<
+  boolean, // Return type
+  void, // Args type
+  { rejectValue: string } // Reject value type
+>("auth/checkSubscriptionStatus", async (_, { rejectWithValue }) => {
+  try {
+    const token = await getQueuedItem("access_token");
+
+    const response = await makeRequest({
+      method: 'POST',
+      url: '/auth/subscription-status',
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch subscription status.");
+    }
+
+    const data = await response.json();
+    return data.isSubscribed; // Assumes backend returns { isSubscribed: boolean }
+  } catch (error) {
+    console.error("[checkSubscriptionStatusThunk] Error:", error);
+    return rejectWithValue(error instanceof Error ? error.message : "Unknown error occurred");
+  }
+});
+
 // Selectors
-export const selectUser = (state: { auth: UserState }) => state.auth.user;
-export const selectIsAuthenticated = (state: { auth: UserState }) =>
+export const selectUser = (state: { auth: AuthState }) => state.auth.user;
+export const selectIsAuthenticated = (state: { auth: AuthState }) =>
   state.auth.isAuthenticated;
-export const selectVerificationMessage = (state: { auth: UserState }) =>
+export const selectVerificationMessage = (state: { auth: AuthState }) =>
   state.auth.verificationMessage;
-export const selectLoadingState = (state: { auth: UserState }) => state.auth.isLoading;
-export const selectSignupSuccess = (state: { auth: UserState }) =>
+export const selectLoadingState = (state: { auth: AuthState }) => state.auth.isLoading;
+export const selectSignupSuccess = (state: { auth: AuthState }) =>
   state.auth.status === 'succeeded';
-export const selectGoogleSignInError = (state: { auth: UserState }) => state.auth.error;
-export const selectGoogleSignInLoading = (state: { auth: UserState }) => state.auth.isLoading;
+export const selectGoogleSignInError = (state: { auth: AuthState }) => state.auth.error;
+export const selectGoogleSignInLoading = (state: { auth: AuthState }) => state.auth.isLoading;
+
 
 // Slice
-const userAuthSlice = createSlice({
+const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
@@ -327,24 +320,9 @@ const userAuthSlice = createSlice({
         state.error = (action.payload as string) || 'Verification failed.';
       });
 
-    // Extra reducers for Google Sign-In
-    builder
-      .addCase(fetchGoogleUser.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
-      .addCase(fetchGoogleUser.fulfilled, (state, action: PayloadAction<User>) => {
-        state.isLoading = false;
-        state.user = action.payload;
-        state.isAuthenticated = true;
-      })
-      .addCase(fetchGoogleUser.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload || 'An error occurred while signing in with Google.';
-      });
   },
 });
 
-export const { updateUser } = userAuthSlice.actions;
-export default userAuthSlice.reducer;
+export const { updateUser } = authSlice.actions;
+export default authSlice.reducer;
 

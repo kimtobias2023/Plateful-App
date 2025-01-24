@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { axiosInstance } from '@axiosInstance';
-import { logout } from '@userAuthSlice';
+import { logout } from 'store/slices/authSlice';
 
 // Define the state interface
 interface AudioState {

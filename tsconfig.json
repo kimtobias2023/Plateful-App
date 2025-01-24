@@ -44,10 +44,13 @@
         "store/slices/themeSlice"
       ],
       "@userAuthSlice": [
-        "store/slices/userAuthSlice"
+        "store/slices/authSlice"
       ],
       "@userProfileSlice": [
-        "store/slices/userProfileSlice"
+        "store/slices/profileSlice"
+      ],
+      "@subscriptionSlice": [
+        "store/slices/subscriptionSlice"
       ],
       "@store": [
         "store/store"
