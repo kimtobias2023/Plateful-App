@@ -1,4 +1,4 @@
-import RecipeValidationSchema from '../models/recipes/RecipeValidation.mjs';
+import RecipeValidationSchema from '../models/sequelize/recipe/RecipeValidation.mjs';
 
 
 const recipeValidationMiddleware = (req, res, next) => {

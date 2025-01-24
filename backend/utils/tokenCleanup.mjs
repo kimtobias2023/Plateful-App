@@ -1,4 +1,4 @@
-import User from '../models/users/basic-profile/User.mjs';
+import User from '../models/sequelize/profile/User.mjs';
 
 async function cleanupExpiredTokens() {
     try {

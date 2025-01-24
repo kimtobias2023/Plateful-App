@@ -1,28 +1,32 @@
 // routes/index.mjs
-import audioRoutes from './audio/index.mjs';
-import authRoutes from './users/auth/index.mjs';
-import basicProfileRoutes from './users/basic-profile/index.mjs';
-import communityRoutes from './community/index.mjs';
-import groceriesRoutes from './groceries/index.mjs';
-import labelsRoutes from './labels/index.mjs';
-import mealPlanningRoutes from './mealplanning/index.mjs';
-import notificationsRoutes from './notifications/index.mjs';
-import recipesRoutes from './recipes/index.mjs';
-import unitsRoutes from './units/index.mjs';
-import extendedProfileRoutes from './users/extended-profile/index.mjs';
+import audioRoutes from './audioRoutes.mjs';
+import authRoutes from './authRoutes.mjs';
+import groceryRoutes from './groceryRoutes.mjs';
+import labelRoutes from './labelRoutes.mjs';
+import menuRoutes from './menuRoutes.mjs';
+import mediaRoutes from './mediaRoutes.mjs';
+import notificationsRoutes from './notificationRoutes.mjs';
+import profileRoutes from './profileRoutes.mjs';
+import recipeRoutes from './recipeRoutes.mjs';
+import socialRoutes from './socialRoutes.mjs';
+import subscriptionRoutes from './subscriptionRoutes.mjs';
+import unitRoutes from './unitRoutes.mjs';
+
+
 
 export {
     audioRoutes,
     authRoutes,
-    basicProfileRoutes,
-    communityRoutes,
-    groceriesRoutes,
-    labelsRoutes,
-    mealPlanningRoutes,
+    socialRoutes,
+    groceryRoutes,
+    labelRoutes,
+    menuRoutes,
+    mediaRoutes,
     notificationsRoutes,
-    recipesRoutes,
-    unitsRoutes,
-    extendedProfileRoutes
+    profileRoutes,
+    recipeRoutes,
+    subscriptionRoutes,
+    unitRoutes,
 };
 
 

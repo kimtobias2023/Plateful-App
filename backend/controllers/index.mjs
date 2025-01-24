@@ -1,16 +1,17 @@
 // routes/index.mjs
 
-export * as Audio from './audio/index.mjs';
-export * as Auth from './users/auth/index.mjs';
-export * as BasicProfile from './users/basic-profile/index.mjs';
-export * as Community from './community/index.mjs';
-export * as ExtendedProfile from './users/extended-profile/index.mjs';
-export * as Groceries from './groceries/index.mjs';
-export * as Labels from './labels/index.mjs';
-export * as MealPlanning from './mealplanning/index.mjs';
-export * as Notifications from './notifications/index.mjs';
-export * as Recipes from './recipes/index.mjs';
-export * as Units from './units/index.mjs';
+export * from './audio/index.mjs';
+export * from './auth/index.mjs';
+export * from './grocery/index.mjs';
+export * from './label/index.mjs';
+export * from './media/index.mjs';
+export * from './menu/index.mjs';
+export * from './notification/index.mjs';
+export * from './profile/index.mjs';
+export * from './recipe/index.mjs';
+export * from './social/index.mjs';
+export * from './subscription/index.mjs';
+export * from './unit/index.mjs';
 
 
 

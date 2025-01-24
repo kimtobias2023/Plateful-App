@@ -1,12 +1,17 @@
-export * as Auth from './users/auth/index.mjs';
-export * as BasicProfile from './users/basic-profile/index.mjs';
-export * as Community from './community/index.mjs';
-export * as ExtendedProfile from './users/extended-profile/index.mjs';
-export * as Groceries from './groceries/index.mjs';
-export * as Labels from './labels/index.mjs';
-export * as MealPlanning from './mealplanning/index.mjs';
-export * as Notifications from './notifications/index.mjs';
-export * as Recipes from './recipes/index.mjs';
-export * as Units from './units/index.mjs';
-export * as Users from './users/index.mjs';
+// Export all modules from the mongoose directory
+export * from './mongoose/sessionService.mjs';
 
+// Export all modules from the sequelize directory
+export * from './sequelize/index.mjs'; // Main Sequelize index
+export * from './sequelize/audio/index.mjs';
+export * from './sequelize/auth/index.mjs';
+export * from './sequelize/grocery/index.mjs';
+export * from './sequelize/label/index.mjs';
+export * from './sequelize/media/index.mjs';
+export * from './sequelize/menu/index.mjs';
+export * from './sequelize/notification/index.mjs';
+export * from './sequelize/profile/index.mjs';
+export * from './sequelize/recipe/index.mjs';
+export * from './sequelize/social/index.mjs';
+export * from './sequelize/subscription/index.mjs';
+export * from './sequelize/unit/index.mjs';

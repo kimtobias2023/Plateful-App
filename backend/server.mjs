@@ -8,24 +8,25 @@ import MongoStore from 'connect-mongo';
 // Own module imports
 import { logger } from './utils/logger.mjs';
 import { connectSequelize } from './config/sequelize-instance.mjs';
-import { setupAssociations } from './models/associations.mjs';
+import { setupAssociations } from './models/sequelize/associations.mjs';
 import cleanupExpiredTokens from './utils/tokenCleanup.mjs';
-import { verifyLoginLinkController } from './controllers/users/auth/index.mjs';
+import { verifyLoginLinkController } from './controllers/auth/index.mjs';
 import { errorMiddleware } from './middleware/index.mjs';
 import csurf from 'csurf';
 
 import {
     audioRoutes,
     authRoutes,
-    basicProfileRoutes,
-    communityRoutes,
-    groceriesRoutes,
-    labelsRoutes,
-    mealPlanningRoutes,
-    notificationsRoutes,
-    recipesRoutes,
-    unitsRoutes,
-    extendedProfileRoutes
+    profileRoutes,
+    socialRoutes,
+    groceryRoutes,
+    labelRoutes,
+    menuRoutes,
+    notificationRoutes,
+    recipeRoutes,
+    unitRoutes,
+    subscriptionRoutes,
+    mediaRoutes
 } from './routes/index.mjs';
 
 // Third-party libraries
@@ -130,18 +131,19 @@ app.get('/error', (req, res) => {
 
 // Integrating the routes
 app.use('/audio', audioRoutes); // This is how you register the audio processing routes
-app.use('/community', communityRoutes);
-app.use('/groceries', groceriesRoutes);
-app.use('/labels', labelsRoutes);
-app.use('/mealplanning', mealPlanningRoutes);
-app.use('/notifications', notificationsRoutes);
-app.use('/recipes', recipesRoutes);
-app.use('/units', unitsRoutes);
+app.use('/social', socialRoutes);
+app.use('/grocery', groceryRoutes);
+app.use('/label', labelRoutes);
+app.use('/menu', menuRoutes);
+app.use('/notification', notificationRoutes);
+app.use('/recipe', recipeRoutes);
+app.use('/unit', unitRoutes);
 
 // User Routes
-app.use('/users/auth', authRoutes);
-app.use('/users/basic-profile', basicProfileRoutes);
-app.use('/users/extended-profile', extendedProfileRoutes);  // This now contains the video upload route
+app.use('/auth', authRoutes);
+app.use('/profile', profileRoutes);
+app.use('/media', mediaRoutes);  // This now contains the video upload route
+app.use('/subscription', subscriptionRoutes);
 
 // Error-handling middleware
 app.use((err, req, res, next) => {

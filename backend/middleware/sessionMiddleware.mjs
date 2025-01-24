@@ -1,5 +1,5 @@
-import { validateSession } from '../mongo/services/sessionService.mjs';
-import User from '../models/users/basic-profile/User.mjs';
+import { validateSession } from '../services/mongoose/sessionService.mjs';
+import User from '../models/sequelize/profile/User.mjs';
 
 const sessionMiddleware = async (req, res, next) => {
   try {

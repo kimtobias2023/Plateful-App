@@ -1,1 +1,1 @@
-export * from './audioController.mjs';
+export { default as audioController } from './audioController.mjs';

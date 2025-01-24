@@ -1,4 +1,4 @@
-import { getRecipeByIdService } from '../services/recipes/recipeService.mjs';
+import { getRecipeByIdService } from '../services/sequelize/recipe/recipeService.mjs';
 import { CustomError } from '../utils/errors/CustomError.mjs';
 
 

@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import User from '../models/users/basic-profile/User.mjs';
+import User from '../models/index.mjs';
 import { CustomError } from '../utils/errors/CustomError.mjs';
 
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY || 'default_secret_key'; // Ensure to set this in your environment variables

@@ -1,9 +1,8 @@
 // controllers/audioController.mjs
 import axios from 'axios';
-import dotenv from 'dotenv';
 import { transcribeAudio } from '../../utils/audio/index.mjs'; // Uncomment if you have an actual implementation
 
-dotenv.config();
+
 
 
 // controllers/audioController.mjs

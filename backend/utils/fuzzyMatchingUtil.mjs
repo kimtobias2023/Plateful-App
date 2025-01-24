@@ -1,4 +1,4 @@
-import { LongShelfLifeItem } from '../models/groceries/index.mjs';
+import { LongShelfLifeItem } from '../models/sequelize/grocery/index.mjs';
 import levenshtein from 'fast-levenshtein';
 
 function calculateSimilarity(str1, str2) {

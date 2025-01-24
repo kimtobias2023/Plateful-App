@@ -1,4 +1,4 @@
-import IngredientShelfLife from '../models/groceries/IngredientShelfLife.mjs'; // Update the import path as needed
+import IngredientShelfLife from '../models/sequelize/grocery/IngredientShelfLife.mjs'; // Update the import path as needed
 
 /**
  * Associates a recipe section ingredient with a long shelf life item.
