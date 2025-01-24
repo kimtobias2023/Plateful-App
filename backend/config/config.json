@@ -1,0 +1,37 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "new-website-app",
+    "database": "postgres_dev",
+    "host": "localhost",
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "postgres",
+    "password": "new-website-app",
+    "database": "postgres_testing",
+    "host": "localhost",
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "postgres",
+    "password": "your_password",
+    "database": "your_production_database_name",
+    "host": "localhost",
+    "dialect": "postgres"
+  },
+  "tts_model": {
+    "model_path": "./models/tacotron2/model.pth.tar",
+    "config_path": "./models/tacotron2/config.json"
+  },
+  "vocoder_model": {
+    "model_path": "../models/wavernn/model.pth.tar",
+    "config_path": "../models/wavernn/config.json"
+  },
+  "use_cuda": false,
+  "use_griffin_lim": true,
+  "audio": {
+    "sample_rate": 22050
+  }
+}
+

@@ -1,0 +1,1 @@
+export { default as notificationsController } from './notificationsController.mjs';
